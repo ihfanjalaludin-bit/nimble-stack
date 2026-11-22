@@ -17,14 +17,6 @@ function run(prog: Uint8Array, input: Uint8Array): { out: number[]; code: number
     if (steps >= 1000000) return trap(10);
     if (pc < 0 || pc >= prog.length) return trap(9);
     const op = prog[pc];
-    const known =
-      op <= 7 ||
-      (op >= 16 && op <= 30) ||
-      (op >= 32 && op <= 34) ||
-      (op >= 48 && op <= 52) ||
-      (op >= 64 && op <= 65) ||
-      (op >= 80 && op <= 83);
-    if (!known) return trap(5);
     const il = op === 1 ? 1 : op === 2 ? 4 : op >= 48 && op <= 51 ? 2 : 0;
     if (pc + 1 + il > prog.length) return trap(9);
     let pops = 0;
@@ -104,6 +96,7 @@ function run(prog: Uint8Array, input: Uint8Array): { out: number[]; code: number
       case 81: { const v = pop(); if (out.length + 1 > 65536) return trap(11); out.push(v & 255); break; }
       case 82: st.push(ip < input.length ? input[ip++] : -1); break;
       case 83: return { out, code: pop() & 255 };
+      default: return trap(5);
     }
   }
 }
